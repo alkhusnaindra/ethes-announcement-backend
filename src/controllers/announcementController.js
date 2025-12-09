@@ -58,6 +58,49 @@ const createAnnouncement = async (req, res) => {
   }
 };
 
+const updateAnnouncement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content, type, linkUrl, status } = req.body;
+
+    const announcement = await prisma.announcement.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!announcement) {
+      return res.status(404).json({ error: "Announcement not found" });
+    }
+
+   // pakai file lama jika tidak upload
+    const fileUrl = req.file ? req.file.path : announcement.fileUrl;
+
+    // jika upload file baru, hapus yang lama
+    if (req.file && announcement.fileUrl && announcement.fileUrl !== fileUrl) {
+      await removeCloudinary(announcement.fileUrl);
+    }
+
+    const updatedAnnouncement = await prisma.announcement.update({
+      where: { id: parseInt(id) },
+      data: {
+        title,
+        content,
+        type,
+        fileUrl,
+        linkUrl,
+        status,
+      },
+    });
+
+    res.status(200).json({
+      message: "Announcement updated successfully",
+      data: updatedAnnouncement,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 const deleteAnnouncement = async (req, res) => {
   try {
     const { id } = req.params;
@@ -102,4 +145,5 @@ module.exports = {
   createAnnouncement,
   deleteAnnouncement,
   getAnnouncementById,
+  updateAnnouncement,
 };
