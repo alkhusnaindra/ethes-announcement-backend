@@ -40,7 +40,7 @@ enum Status {
 }
 
 model Employee {
-  id      Int                  @id @default(autoincrement())
+  id      String                  @id 
   name    String
   views   AnnouncementView[]
 }
@@ -50,7 +50,7 @@ model AnnouncementView {
   announcement    Announcement  @relation(fields: [announcementId], references: [id])
   announcementId  Int
   employee        Employee      @relation(fields: [employeeId], references: [id])
-  employeeId      Int
+  employeeId      String
   viewedAt        DateTime      @default(now())
 
   @@unique([announcementId, employeeId])
