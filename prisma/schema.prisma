@@ -23,6 +23,8 @@ model Announcement {
   status    Status    @default(ACTIVE)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  views     AnnouncementView[]
 }
 
 enum AnnouncementType {
@@ -35,4 +37,21 @@ enum AnnouncementType {
 enum Status {
   ACTIVE
   INACTIVE
+}
+
+model Employee {
+  id      Int                  @id @default(autoincrement())
+  name    String
+  views   AnnouncementView[]
+}
+
+model AnnouncementView {
+  id              Int           @id @default(autoincrement())
+  announcement    Announcement  @relation(fields: [announcementId], references: [id])
+  announcementId  Int
+  employee        Employee      @relation(fields: [employeeId], references: [id])
+  employeeId      Int
+  viewedAt        DateTime      @default(now())
+
+  @@unique([announcementId, employeeId])
 }
