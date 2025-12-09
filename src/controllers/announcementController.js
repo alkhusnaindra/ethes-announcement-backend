@@ -1,5 +1,6 @@
 const prisma = require("./../config/prisma");
 const removeCloudinary  = require("../utils/removeCloudinary");
+const { search } = require("../app");
 
 const getAllAnnouncements = async (req, res) => {
   try {
@@ -8,7 +9,6 @@ const getAllAnnouncements = async (req, res) => {
       message: "Announcements retrieved successfully",
       data: announcements,
     });
-    res.json(announcements);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -140,10 +140,39 @@ const deleteAnnouncement = async (req, res) => {
   }
 };
 
+const searchAnnouncements = async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query || query.trim() === "") {
+      return res.status(400).json({ error: "Query parameter is required" });
+    }
+
+    const announcements = await prisma.announcement.findMany({
+      where: {
+        OR: [
+          { title: { contains: query, mode: 'insensitive' } },
+          { content: { contains: query, mode: 'insensitive' } },
+        ],
+      },
+    });
+
+    res.status(200).json({
+      message: "Search completed successfully",
+      data: announcements,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 module.exports = {
   getAllAnnouncements,
   createAnnouncement,
   deleteAnnouncement,
   getAnnouncementById,
   updateAnnouncement,
+  searchAnnouncements,
 };
