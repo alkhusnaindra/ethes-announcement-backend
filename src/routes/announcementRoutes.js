@@ -16,4 +16,5 @@ router.post('/announcements/:id/views', viewController.addAnnouncementView);
 router.get('/announcements/:id/views', viewController.getAnnouncementViews);
 router.get('/announcements/:id/views/count', viewController.getAnnouncementViewCount);
 
+
 module.exports = router;
